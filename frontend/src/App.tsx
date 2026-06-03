@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Settings } from 'lucide-react'
 import CurriculumManager from './components/CurriculumManager'
+import StudentManager from './components/StudentManager'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -13,6 +14,27 @@ function App() {
     { id: 'stats', label: 'Statistiques', icon: BarChart3 },
     { id: 'settings', label: 'Configuration', icon: Settings },
   ]
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'curriculum':
+        return <CurriculumManager />;
+      case 'students':
+        return <StudentManager />;
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <h3 className="text-lg font-semibold mb-4 text-slate-800">Status de l'API</h3>
+              <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit text-xs font-bold uppercase tracking-wider">
+                <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+                En ligne
+              </div>
+            </div>
+          </div>
+        );
+    }
+  }
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 w-full">
@@ -69,19 +91,7 @@ function App() {
           </div>
         </header>
 
-        {activeTab === 'curriculum' ? (
-          <CurriculumManager />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4 text-slate-800">Status de l'API</h3>
-              <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit text-xs font-bold uppercase tracking-wider">
-                <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
-                En ligne
-              </div>
-            </div>
-          </div>
-        )}
+        {renderContent()}
       </main>
     </div>
   )
