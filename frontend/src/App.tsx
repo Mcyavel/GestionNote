@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Settings } from 'lucide-react'
 import CurriculumManager from './components/CurriculumManager'
 import StudentManager from './components/StudentManager'
+import GradeEntry from './components/GradeEntry'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -21,6 +22,8 @@ function App() {
         return <CurriculumManager />;
       case 'students':
         return <StudentManager />;
+      case 'grades':
+        return <GradeEntry />;
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -38,7 +41,8 @@ function App() {
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 w-full">
-      {/* Sidebar */}
+...
+
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0">
         <div className="p-6 flex items-center gap-3 border-b border-slate-100">
           <GraduationCap className="text-blue-600 h-8 w-8" />
