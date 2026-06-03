@@ -3,6 +3,7 @@ import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Sett
 import CurriculumManager from './components/CurriculumManager'
 import StudentManager from './components/StudentManager'
 import GradeEntry from './components/GradeEntry'
+import StatsDashboard from './components/StatsDashboard'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -24,6 +25,8 @@ function App() {
         return <StudentManager />;
       case 'grades':
         return <GradeEntry />;
+      case 'stats':
+        return <StatsDashboard />;
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
