@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Settings } from 'lucide-react'
+import CurriculumManager from './components/CurriculumManager'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -16,7 +17,7 @@ function App() {
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 w-full">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
+      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0">
         <div className="p-6 flex items-center gap-3 border-b border-slate-100">
           <GraduationCap className="text-blue-600 h-8 w-8" />
           <h1 className="text-xl font-bold tracking-tight text-slate-800">Miage Note</h1>
@@ -68,16 +69,19 @@ function App() {
           </div>
         </header>
 
-        {/* Content Placeholder */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="text-lg font-semibold mb-4 text-slate-800">Status de l'API</h3>
-            <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit text-xs font-bold uppercase tracking-wider">
-              <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
-              En ligne
+        {activeTab === 'curriculum' ? (
+          <CurriculumManager />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <h3 className="text-lg font-semibold mb-4 text-slate-800">Status de l'API</h3>
+              <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit text-xs font-bold uppercase tracking-wider">
+                <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+                En ligne
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
     </div>
   )
