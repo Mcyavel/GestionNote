@@ -191,10 +191,8 @@ class AcademicLogic {
             }
         }
 
-        $bccAverages = [];
+        $ueAverages = [];
         foreach ($bccs as $bccId => $bcc) {
-            $bccSum = 0; $bccCoeff = 0;
-            $bccDef = false;
             $semId = $bcc['semestre_id'];
             $isJuryValide = isset($semestersJuryState[$semId]) && $semestersJuryState[$semId] === 1;
 
@@ -224,15 +222,35 @@ class AcademicLogic {
                 }
 
                 if ($ueDef) {
-                    $bccDef = true;
+                    $ueAverages[$ueId] = 'DEF';
                 } elseif ($ueCount > 0) {
                     $moyUe = round($ueSum / $ueCount, 2);
                     if ($isJuryValide) {
                         $ptsUe = $juryPointsMap[$semId]['ue'][$ueId] ?? 0.0;
                         $moyUe = min(20.0, $moyUe + $ptsUe);
                     }
-                    $bccSum += ($moyUe * $ue['coeff']);
-                    $bccCoeff += $ue['coeff'];
+                    $ueAverages[$ueId] = $moyUe;
+                } else {
+                    $ueAverages[$ueId] = null;
+                }
+            }
+        }
+
+        $bccAverages = [];
+        foreach ($bccs as $bccId => $bcc) {
+            $bccSum = 0; $bccCoeff = 0;
+            $bccDef = false;
+            $semId = $bcc['semestre_id'];
+            $isJuryValide = isset($semestersJuryState[$semId]) && $semestersJuryState[$semId] === 1;
+
+            foreach ($bcc['ues'] as $ueId => $ue) {
+                if (isset($ueAverages[$ueId])) {
+                    if ($ueAverages[$ueId] === 'DEF') {
+                        $bccDef = true;
+                    } elseif ($ueAverages[$ueId] !== null) {
+                        $bccSum += ($ueAverages[$ueId] * $ue['coeff']);
+                        $bccCoeff += $ue['coeff'];
+                    }
                 }
             }
 
@@ -259,15 +277,44 @@ class AcademicLogic {
         $processedIds = [];
         foreach ($bccs as $bccId => $bcc) {
             if (in_array($bccId, $processedIds)) continue;
-            $m1 = $bccAverages[$bccId] ?? null;
-            $m2 = null;
-            if ($bcc['twin_id']) {
-                $m2 = $bccAverages[$bcc['twin_id']] ?? null;
-                $processedIds[] = $bcc['twin_id'];
-            }
+            
+            $twinId = $bcc['twin_id'];
             $processedIds[] = $bccId;
+            if ($twinId) {
+                $processedIds[] = $twinId;
+            }
 
-            $moyAnnuelle = self::calculateAnnualBccAverage($m1, $m2);
+            // Gather all UEs for this annual BCC (from both twin BCCs)
+            $annualUes = $bcc['ues'];
+            if ($twinId && isset($bccs[$twinId])) {
+                foreach ($bccs[$twinId]['ues'] as $ueId => $ue) {
+                    $annualUes[$ueId] = $ue;
+                }
+            }
+
+            $annualBccSum = 0;
+            $annualBccCoeff = 0;
+            $isDef = false;
+
+            foreach ($annualUes as $ueId => $ue) {
+                if (isset($ueAverages[$ueId])) {
+                    if ($ueAverages[$ueId] === 'DEF') {
+                        $isDef = true;
+                    } elseif ($ueAverages[$ueId] !== null) {
+                        $annualBccSum += ($ueAverages[$ueId] * $ue['coeff']);
+                        $annualBccCoeff += $ue['coeff'];
+                    }
+                }
+            }
+
+            if ($isDef) {
+                $moyAnnuelle = 'DEF';
+            } elseif ($annualBccCoeff > 0) {
+                $moyAnnuelle = round($annualBccSum / $annualBccCoeff, 2);
+            } else {
+                $moyAnnuelle = null;
+            }
+
             $annualBccs[] = $moyAnnuelle;
         }
 

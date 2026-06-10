@@ -330,30 +330,67 @@ if ($method === 'GET') {
                 $annualBccs = [];
                 $rawAnnualBccs = [];
                 $processedIds = [];
+                $bccMapById = [];
+                foreach ($structure['bcc'] as $b) {
+                    $bccMapById[$b['id']] = $b;
+                }
+
                 foreach ($structure['bcc'] as $bcc) {
                     if (in_array($bcc['id'], $processedIds)) continue;
                     
-                    // Active/adjusted averages
-                    $m1 = $student['grades']['bcc'][$bcc['id']] ?? null;
-                    $m2 = null;
-                    if ($bcc['twin_id']) {
-                        $m2 = $student['grades']['bcc'][$bcc['twin_id']] ?? null;
-                        $processedIds[] = $bcc['twin_id'];
-                    }
+                    $twinId = $bcc['twin_id'];
                     $processedIds[] = $bcc['id'];
+                    if ($twinId) {
+                        $processedIds[] = $twinId;
+                    }
 
-                    $moyAnnuelle = AcademicLogic::calculateAnnualBccAverage($m1, $m2);
+                    // Gather all UEs from both BCCs
+                    $annualUes = $bcc['ue'];
+                    if ($twinId && isset($bccMapById[$twinId])) {
+                        foreach ($bccMapById[$twinId]['ue'] as $ue) {
+                            $annualUes[] = $ue;
+                        }
+                    }
+
+                    // Active (Adjusted)
+                    $totalSum = 0; $totalCoeff = 0; $isDef = false;
+                    foreach ($annualUes as $ue) {
+                        $ueVal = $student['grades']['ue'][$ue['id']] ?? null;
+                        if ($ueVal === 'DEF') {
+                            $isDef = true;
+                        } elseif ($ueVal !== null) {
+                            $totalSum += ((float)$ueVal * $ue['coeff']);
+                            $totalCoeff += $ue['coeff'];
+                        }
+                    }
+                    if ($isDef) {
+                        $moyAnnuelle = 'DEF';
+                    } else {
+                        $moyAnnuelle = ($totalCoeff > 0) ? round($totalSum / $totalCoeff, 2) : null;
+                    }
                     $annualBccs[] = $moyAnnuelle;
                     $student['grades']['bcc_annuel'][$bcc['id']] = $moyAnnuelle;
-                    if ($bcc['twin_id']) $student['grades']['bcc_annuel'][$bcc['twin_id']] = $moyAnnuelle;
+                    if ($twinId) $student['grades']['bcc_annuel'][$twinId] = $moyAnnuelle;
 
-                    // Raw averages
-                    $rawM1 = $student['raw_grades']['bcc'][$bcc['id']] ?? null;
-                    $rawM2 = $bcc['twin_id'] ? ($student['raw_grades']['bcc'][$bcc['twin_id']] ?? null) : null;
-                    $rawMoyAnnuelle = AcademicLogic::calculateAnnualBccAverage($rawM1, $rawM2);
+                    // Raw
+                    $totalRawSum = 0; $totalRawCoeff = 0; $isRawDef = false;
+                    foreach ($annualUes as $ue) {
+                        $ueRawVal = $student['raw_grades']['ue'][$ue['id']] ?? null;
+                        if ($ueRawVal === 'DEF') {
+                            $isRawDef = true;
+                        } elseif ($ueRawVal !== null) {
+                            $totalRawSum += ((float)$ueRawVal * $ue['coeff']);
+                            $totalRawCoeff += $ue['coeff'];
+                        }
+                    }
+                    if ($isRawDef) {
+                        $rawMoyAnnuelle = 'DEF';
+                    } else {
+                        $rawMoyAnnuelle = ($totalRawCoeff > 0) ? round($totalRawSum / $totalRawCoeff, 2) : null;
+                    }
                     $rawAnnualBccs[] = $rawMoyAnnuelle;
                     $student['raw_grades']['bcc_annuel'][$bcc['id']] = $rawMoyAnnuelle;
-                    if ($bcc['twin_id']) $student['raw_grades']['bcc_annuel'][$bcc['twin_id']] = $rawMoyAnnuelle;
+                    if ($twinId) $student['raw_grades']['bcc_annuel'][$twinId] = $rawMoyAnnuelle;
                 }
 
                 $student['validation']['status'] = AcademicLogic::calculateYearValidation($annualBccs, $rules);
@@ -834,6 +871,7 @@ if ($method === 'GET') {
                 foreach ($students as $student) {
                     $sId = (int)$student['id'];
                     $studentGrades = ['bcc' => [], 'bcc_annuel' => []];
+                    $studentUeGrades = [];
 
                     foreach ($structure['bcc'] as $bcc) {
                         $bccSum = 0; $bccCoeff = 0;
@@ -871,6 +909,7 @@ if ($method === 'GET') {
 
                             if ($ueDef) {
                                 $bccDef = true;
+                                $studentUeGrades[$ue['id']] = 'DEF';
                             } elseif ($ueCount > 0) {
                                 $ueAvg = round($ueSum / $ueCount, 2);
                                 if ($isJuryValide) {
@@ -882,6 +921,9 @@ if ($method === 'GET') {
 
                                 $ueName = trim($ue['nom']);
                                 $ueScoresByName[$ueName][] = $ueAvg;
+                                $studentUeGrades[$ue['id']] = $ueAvg;
+                            } else {
+                                $studentUeGrades[$ue['id']] = null;
                             }
                         }
 
@@ -908,19 +950,49 @@ if ($method === 'GET') {
 
                     // Calculer les BCC annuels
                     $processedIds = [];
+                    $bccMapById = [];
+                    foreach ($structure['bcc'] as $b) {
+                        $bccMapById[$b['id']] = $b;
+                    }
+
                     foreach ($structure['bcc'] as $bcc) {
                         if (in_array($bcc['id'], $processedIds)) continue;
 
-                        $m1 = $studentGrades['bcc'][$bcc['id']] ?? null;
-                        $m2 = null;
-                        if ($bcc['twin_id']) {
-                            $m2 = $studentGrades['bcc'][$bcc['twin_id']] ?? null;
-                            $processedIds[] = $bcc['twin_id'];
-                        }
+                        $twinId = $bcc['twin_id'];
                         $processedIds[] = $bcc['id'];
+                        if ($twinId) {
+                            $processedIds[] = $twinId;
+                        }
 
-                        $moyAnnuelle = AcademicLogic::calculateAnnualBccAverage($m1, $m2);
+                        // Gather all UEs from both BCCs
+                        $annualUes = $bcc['ue'];
+                        if ($twinId && isset($bccMapById[$twinId])) {
+                            foreach ($bccMapById[$twinId]['ue'] as $ue) {
+                                $annualUes[] = $ue;
+                            }
+                        }
+
+                        $totalSum = 0; $totalCoeff = 0; $isDef = false;
+                        foreach ($annualUes as $ue) {
+                            $ueVal = $studentUeGrades[$ue['id']] ?? null;
+                            if ($ueVal === 'DEF') {
+                                $isDef = true;
+                            } elseif ($ueVal !== null) {
+                                $totalSum += ((float)$ueVal * $ue['coeff']);
+                                $totalCoeff += $ue['coeff'];
+                            }
+                        }
+
+                        if ($isDef) {
+                            $moyAnnuelle = 'DEF';
+                        } else {
+                            $moyAnnuelle = ($totalCoeff > 0) ? round($totalSum / $totalCoeff, 2) : null;
+                        }
+
                         $studentGrades['bcc_annuel'][$bcc['id']] = $moyAnnuelle;
+                        if ($twinId) {
+                            $studentGrades['bcc_annuel'][$twinId] = $moyAnnuelle;
+                        }
 
                         $bccName = $bcc['nom'];
                         if ($moyAnnuelle !== null && $moyAnnuelle !== 'DEF') {

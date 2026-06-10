@@ -110,12 +110,12 @@ export default function Documentation() {
       },
       {
         title: "3. Calcul des BCC Annuels",
-        formula: "Moyenne Annuelle BCC = (Moyenne BCC Semestre Impair + Moyenne BCC Semestre Pair) / 2",
+        formula: "Moyenne Annuelle BCC = Somme(Moyenne UE * Coeff UE) / Somme(Coeff UE)",
         details: [
-          "Se base sur les BCC jumeaux configurés dans la maquette (ex: BCC1 de S1 avec BCC1 de S2).",
-          "Si un seul des deux BCC jumeaux est renseigné, la moyenne annuelle prend la valeur du BCC existant.",
-          "Si l'un des deux BCC jumeaux est 'DEF', le BCC annuel est marqué comme 'DEF'.",
-          "Si les deux sont absents, le BCC annuel est 'INCOMPLET' (null)."
+          "Se base sur le regroupement de toutes les UEs composant les deux BCC jumeaux configurés dans la maquette (ex: les UEs du BCC1 de S1 et du BCC1 de S2).",
+          "Calcule la moyenne pondérée globale de toutes ces UEs réunies en fonction de leurs coefficients respectifs.",
+          "Si l'une des UEs constitutives des deux BCC jumeaux a le statut 'DEF', le BCC annuel est marqué comme 'DEF'.",
+          "S'il n'y a aucune note dans les UEs constitutives, le BCC annuel est 'INCOMPLET' (null)."
         ]
       },
       {
