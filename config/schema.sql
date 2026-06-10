@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `semestres` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `annee_id` INT NOT NULL,
     `nom` VARCHAR(50) NOT NULL, -- Ex: "Semestre 1", "S5"
+    `jury_valide` TINYINT(1) NOT NULL DEFAULT 0,
     CONSTRAINT `fk_semestres_annee` FOREIGN KEY (`annee_id`) REFERENCES `annees`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -60,11 +61,24 @@ CREATE TABLE IF NOT EXISTS `notes` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `etudiant_id` INT NOT NULL,
     `ecue_id` INT NOT NULL,
-    `valeur` DECIMAL(4,2) NOT NULL, -- Note sur 20
+    `valeur` DECIMAL(4,2) DEFAULT NULL, -- Note sur 20
+    `statut` VARCHAR(10) DEFAULT NULL, -- ABI, ABJ, DEF
     `date_saisie` DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `fk_notes_etudiant` FOREIGN KEY (`etudiant_id`) REFERENCES `etudiants`(`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_notes_ecue` FOREIGN KEY (`ecue_id`) REFERENCES `ecue`(`id`) ON DELETE CASCADE,
     UNIQUE KEY `unique_note_etudiant_ecue` (`etudiant_id`, `ecue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 3b. Bonus et Malus Semestriels
+CREATE TABLE IF NOT EXISTS `notes_bonus_malus` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `etudiant_id` INT NOT NULL,
+    `semestre_id` INT NOT NULL,
+    `bonus` DECIMAL(4,2) DEFAULT NULL,
+    `malus` DECIMAL(4,2) DEFAULT NULL,
+    CONSTRAINT `fk_nbm_etudiant` FOREIGN KEY (`etudiant_id`) REFERENCES `etudiants`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_nbm_semestre` FOREIGN KEY (`semestre_id`) REFERENCES `semestres`(`id`) ON DELETE CASCADE,
+    UNIQUE KEY `unique_nbm_etudiant_semestre` (`etudiant_id`, `semestre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. Paramétrage et Règles de Validation (Optionnel pour Phase 1)
@@ -75,6 +89,30 @@ CREATE TABLE IF NOT EXISTS `regles_validation` (
     `nb_bcc_autorises_sous_seuil` INT DEFAULT 0, -- Ex: "au plus 1 BCC annuel à 9"
     `seuil_minimal_bcc` DECIMAL(4,2) DEFAULT 9.0,
     CONSTRAINT `fk_regles_annee` FOREIGN KEY (`annee_id`) REFERENCES `annees`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 5. Jury et Points de Jury
+CREATE TABLE IF NOT EXISTS `notes_jury` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `etudiant_id` INT NOT NULL,
+    `semestre_id` INT NOT NULL,
+    `element_type` ENUM('ecue', 'ue', 'bcc') NOT NULL,
+    `element_id` INT NOT NULL,
+    `points` DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT `fk_nj_etudiant` FOREIGN KEY (`etudiant_id`) REFERENCES `etudiants`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_nj_semestre` FOREIGN KEY (`semestre_id`) REFERENCES `semestres`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `chk_points` CHECK (`points` >= 0.00 AND `points` <= 0.50),
+    UNIQUE KEY `unique_etudiant_semestre_element` (`etudiant_id`, `semestre_id`, `element_type`, `element_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `jury_drafts` (
+    `etudiant_id` INT NOT NULL,
+    `semestre_id` INT NOT NULL,
+    `draft_notes` JSON DEFAULT NULL,
+    `draft_points` JSON DEFAULT NULL,
+    PRIMARY KEY (`etudiant_id`, `semestre_id`),
+    CONSTRAINT `fk_jd_etudiant` FOREIGN KEY (`etudiant_id`) REFERENCES `etudiants`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_jd_semestre` FOREIGN KEY (`semestre_id`) REFERENCES `semestres`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Indexation pour les performances

@@ -1,4 +1,5 @@
 <?php
+<?php
 declare(strict_types=1);
 
 /**
@@ -6,6 +7,10 @@ declare(strict_types=1);
  */
 
 try {
+    if (!function_exists('requirePermission')) {
+        require_once __DIR__ . '/auth.php';
+    }
+    global $pdo;
     // Tentative de requête simple
     $stmt = $pdo->query("SELECT 1");
     $dbStatus = $stmt ? "Connecté" : "Erreur";
