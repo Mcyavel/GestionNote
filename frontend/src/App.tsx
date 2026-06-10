@@ -13,6 +13,8 @@ import ChangePassword from './components/ChangePassword'
 import UserManager from './components/UserManager'
 import Documentation from './components/Documentation'
 import SettingsManager from './components/SettingsManager'
+import HelpTooltip from './components/HelpTooltip'
+
 
 
 
@@ -76,16 +78,16 @@ function App() {
   }
 
   const allMenuItems = [
-    { id: 'curriculum' as WindowType, label: 'Maquettes', icon: GraduationCap, roles: ['ADMIN', 'SCOLARITE'] },
-    { id: 'students' as WindowType, label: 'Étudiants', icon: Users, roles: ['ADMIN', 'SCOLARITE'] },
-    { id: 'grades' as WindowType, label: 'Saisie Notes', icon: FileSpreadsheet, roles: ['ADMIN', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
-    { id: 'jury' as WindowType, label: 'Délibération Jury', icon: Scale, roles: ['ADMIN'] },
-    { id: 'ledger' as WindowType, label: 'Grand Livre', icon: BookOpen, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
-    { id: 'comparator' as WindowType, label: 'Comparateur Apogée', icon: GitCompare, roles: ['ADMIN', 'SCOLARITE'] },
-    { id: 'stats' as WindowType, label: 'Statistiques', icon: BarChart3, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
-    { id: 'users' as WindowType, label: 'Utilisateurs', icon: Shield, roles: ['ADMIN'] },
-    { id: 'documentation' as WindowType, label: 'Aide & Règles', icon: HelpCircle, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
-    { id: 'settings' as WindowType, label: 'Configuration', icon: Settings, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
+    { id: 'curriculum' as WindowType, label: 'Maquettes', icon: GraduationCap, roles: ['ADMIN', 'SCOLARITE'], help: "Gérer la structure des années universitaires, semestres, BCC, UEs et ECUEs de formation." },
+    { id: 'students' as WindowType, label: 'Étudiants', icon: Users, roles: ['ADMIN', 'SCOLARITE'], help: "Administrer les inscriptions des étudiants, gérer les redoublants et importer des listes." },
+    { id: 'grades' as WindowType, label: 'Saisie Notes', icon: FileSpreadsheet, roles: ['ADMIN', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'], help: "Saisir les notes et absences pour chaque enseignement de vos promotions." },
+    { id: 'jury' as WindowType, label: 'Délibération Jury', icon: Scale, roles: ['ADMIN'], help: "Attribuer les points de jury, bonus/malus et verrouiller les semestres." },
+    { id: 'ledger' as WindowType, label: 'Grand Livre', icon: BookOpen, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'], help: "Consulter la vue matricielle globale des notes et statuts de validation de l'année." },
+    { id: 'comparator' as WindowType, label: 'Comparateur Apogée', icon: GitCompare, roles: ['ADMIN', 'SCOLARITE'], help: "Comparer vos notes locales avec un fichier d'export Apogée pour identifier les écarts." },
+    { id: 'stats' as WindowType, label: 'Statistiques', icon: BarChart3, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'], help: "Analyser les taux de réussite, moyennes et distributions des notes." },
+    { id: 'users' as WindowType, label: 'Utilisateurs', icon: Shield, roles: ['ADMIN'], help: "Créer des comptes utilisateurs, attribuer des rôles et limiter les accès par promotion." },
+    { id: 'documentation' as WindowType, label: 'Aide & Règles', icon: HelpCircle, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'], help: "Consulter le guide complet d'utilisation et les formules de calcul métier." },
+    { id: 'settings' as WindowType, label: 'Configuration', icon: Settings, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'], help: "Ajuster la sécurité, les préférences visuelles et la base de données." },
   ];
 
   const menuItems = allMenuItems.filter(item => item.roles.includes(user.role));
@@ -205,18 +207,21 @@ function App() {
 
         <div className="flex flex-col flex-wrap gap-y-2 gap-x-4 mt-2 max-h-[calc(100vh-260px)] w-fit content-start">
           {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => openWindow(item.id)}
-              className="group flex flex-col items-center gap-1.5 w-24 p-2.5 rounded-2xl transition-all hover:bg-white/10"
-            >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg ${
-                windows[item.id].isOpen ? 'bg-blue-500/80 text-white' : 'glass-panel text-white/70'
-              }`}>
-                <item.icon className="w-7 h-7" />
-              </div>
-              <span className="text-[11px] font-medium text-white/80 text-center shadow-sm leading-tight">{item.label}</span>
-            </button>
+            <div key={item.id} className="w-24">
+              <HelpTooltip content={item.help || ''} position="right">
+                <button
+                  onClick={() => openWindow(item.id)}
+                  className="group flex flex-col items-center gap-1.5 w-full p-2.5 rounded-2xl transition-all hover:bg-white/10"
+                >
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg ${
+                    windows[item.id].isOpen ? 'bg-blue-500/80 text-white' : 'glass-panel text-white/70'
+                  }`}>
+                    <item.icon className="w-7 h-7" />
+                  </div>
+                  <span className="text-[11px] font-medium text-white/80 text-center shadow-sm leading-tight">{item.label}</span>
+                </button>
+              </HelpTooltip>
+            </div>
           ))}
         </div>
 
@@ -229,20 +234,21 @@ function App() {
             </div>
             <div className="w-[1px] h-6 bg-white/10 mx-1"></div>
             {menuItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => toggleWindow(item.id)}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all relative ${
-                  windows[item.id].isOpen 
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40 translate-y-[-4px]' 
-                  : 'hover:bg-white/10 text-white/50 hover:text-white'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                {windows[item.id].isOpen && windows[item.id].isMinimized && (
-                    <span className="absolute bottom-1 w-1 h-1 bg-white rounded-full"></span>
-                )}
-              </button>
+              <HelpTooltip key={item.id} content={`Basculer l'affichage de : ${item.label}`} position="top">
+                <button
+                  onClick={() => toggleWindow(item.id)}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all relative ${
+                    windows[item.id].isOpen 
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40 translate-y-[-4px]' 
+                    : 'hover:bg-white/10 text-white/50 hover:text-white'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {windows[item.id].isOpen && windows[item.id].isMinimized && (
+                      <span className="absolute bottom-1 w-1 h-1 bg-white rounded-full"></span>
+                  )}
+                </button>
+              </HelpTooltip>
             ))}
           </div>
         </div>

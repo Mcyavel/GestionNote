@@ -3,12 +3,14 @@ import { Book, Shield, Calculator, FileText, CheckCircle, HelpCircle } from 'luc
 
 export default function Documentation() {
   const [activeTab, setActiveTab] = useState<'screens' | 'rules' | 'roles' | 'dev'>('screens')
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const sections = {
     screens: [
       {
         title: "Tableau de Bord & Menu Principal",
         desc: "L'interface principale est conçue comme un bureau virtuel avec des fenêtres superposables et réductibles.",
+        image: null,
         details: [
           "Barre des tâches en bas permettant de masquer, d'afficher ou de minimiser les fenêtres ouvertes.",
           "Indicateur de session en haut à droite avec le nom d'utilisateur, le rôle et un bouton de déconnexion sécurisé.",
@@ -18,6 +20,7 @@ export default function Documentation() {
       {
         title: "Gestion des Maquettes (Curriculum)",
         desc: "Permet de définir la structure pédagogique des enseignements.",
+        image: "screenshots/maquettes.png",
         details: [
           "Création d'Années Universitaires (ex: Master 1 Marseille, Master 2). Une année peut être configurée comme 'Maquette Pure' (modèle) ou affectée à des promotions actives.",
           "Structure hiérarchique stricte : Année -> Semestres (S1, S2...) -> BCC (Blocs de Connaissances et Compétences) -> UE (Unités d'Enseignement) -> ECUE (Éléments Constitutifs d'une Unité d'Enseignement).",
@@ -29,6 +32,7 @@ export default function Documentation() {
       {
         title: "Gestion des Étudiants",
         desc: "Module d'administration des effectifs étudiants.",
+        image: "screenshots/etudiants.png",
         details: [
           "Ajout, modification et suppression d'étudiants (Nom, Prénom, Email, N° Étudiant, Année/Promotion d'inscription).",
           "Importation en masse d'étudiants via des fichiers Excel.",
@@ -39,6 +43,7 @@ export default function Documentation() {
       {
         title: "Saisie des Notes",
         desc: "Interface de saisie et de suivi des notes par promotion et ECUE.",
+        image: "screenshots/saisie_notes.png",
         details: [
           "Sélection de la Promotion, du Semestre, de l'UE et de l'ECUE cible.",
           "Tableau de saisie en temps réel avec sauvegarde automatique.",
@@ -49,6 +54,7 @@ export default function Documentation() {
       {
         title: "Délibération du Jury",
         desc: "Module critique réservé aux administrateurs pour ajuster les notes et valider les semestres.",
+        image: "screenshots/jury.png",
         details: [
           "Attribution de points de jury (ajustements manuels) au niveau des ECUE, des UE ou des BCC pour un étudiant donné.",
           "Saisie des points Bonus / Malus appliqués directement sur la moyenne d'un BCC du semestre.",
@@ -59,6 +65,7 @@ export default function Documentation() {
       {
         title: "Le Grand Livre (Grade Ledger)",
         desc: "Vue d'ensemble complète et détaillée des résultats pour une promotion.",
+        image: "screenshots/grand_livre.png",
         details: [
           "Affichage sous forme de grand tableau matriciel de toutes les notes d'ECUE, moyennes d'UE et moyennes de BCC pour chaque étudiant.",
           "Calcul en temps réel des moyennes annuelles globales et du statut de validation de l'année (ADMIS, AJOURNÉ, INCOMPLET, DÉFAILLANT).",
@@ -69,6 +76,7 @@ export default function Documentation() {
       {
         title: "Comparateur Apogée",
         desc: "Outil de réconciliation pour valider les notes locales par rapport à celles enregistrées dans le système Apogée.",
+        image: "screenshots/comparateur.png",
         details: [
           "Importation d'un fichier Excel extrait d'Apogée.",
           "Analyse automatique et comparaison des notes d'ECUE et moyennes.",
@@ -78,11 +86,33 @@ export default function Documentation() {
       {
         title: "Statistiques & Décisions",
         desc: "Tableau de bord décisionnel sur les performances de la promotion.",
+        image: "screenshots/statistiques.png",
         details: [
           "Taux de réussite global (Admis, Ajournés, Défaillants).",
           "Moyennes générales, minimales et maximales par UE et ECUE.",
           "Distribution des notes sous forme d'histogrammes.",
           "Liste des étudiants en situation d'échec ou sous condition de rattrapage."
+        ]
+      },
+      {
+        title: "Gestion des Utilisateurs",
+        desc: "Interface de contrôle d'accès pour les administrateurs.",
+        image: "screenshots/utilisateurs.png",
+        details: [
+          "Création d'utilisateurs avec attribution d'un mot de passe temporaire.",
+          "Sélection du rôle d'habilitation (ADMIN, SCOLARITE, ENSEIGNANT, LECTEUR).",
+          "Restriction d'accès par promotion : possibilité de lier un utilisateur à une ou plusieurs promotions spécifiques.",
+          "Suppression ou modification rapide des habilitations."
+        ]
+      },
+      {
+        title: "Configuration du Système",
+        desc: "Panneau de personnalisation et de sécurité adaptatif selon le rôle connecté.",
+        image: "screenshots/configuration.png",
+        details: [
+          "ADMIN : Configuration de la complexité des mots de passe, du délai d'expiration de session, réinitialisation des brouillons de jury, et export SQL de la base de données.",
+          "SCOLARITE & ADMIN : Définition des règles de validation par défaut (seuil de validation, notes éliminatoires, BCC tolérés sous le seuil).",
+          "TOUS : Personnalisation visuelle (mode sombre/classique, densité confortable/compacte des tableaux) et activation ou désactivation de l'aide contextuelle."
         ]
       }
     ],
@@ -271,22 +301,37 @@ export default function Documentation() {
               <HelpCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
               <p className="text-xs text-blue-200 leading-relaxed">
                 Retrouvez ici la description détaillée de chaque module disponible dans l'application. 
-                Certains écrans ne s'affichent sur votre bureau qu'en fonction de votre rôle et de vos permissions d'accès.
+                Certains écrans ne s'affichent sur votre bureau qu'en fonction de votre rôle et de vos permissions d'accès. Vous pouvez cliquer sur les captures d'écran pour les agrandir.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sections.screens.map((s, idx) => (
-                <div key={idx} className="bg-white/5 rounded-xl border border-white/10 p-5 hover:border-blue-500/30 transition-all hover:bg-white/10">
-                  <h3 className="text-sm font-bold text-blue-300 mb-2">{s.title}</h3>
-                  <p className="text-xs text-white/70 mb-4">{s.desc}</p>
-                  <ul className="space-y-2">
-                    {s.details.map((d, i) => (
-                      <li key={i} className="text-[11px] text-white/50 flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                        <span>{d}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div key={idx} className="bg-white/5 rounded-xl border border-white/10 p-5 hover:border-blue-500/30 transition-all hover:bg-white/10 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-blue-300 mb-2">{s.title}</h3>
+                    <p className="text-xs text-white/70 mb-4">{s.desc}</p>
+                    
+                    {s.image && (
+                      <div 
+                        onClick={() => setSelectedImage(s.image)}
+                        className="mb-4 rounded-lg overflow-hidden border border-white/10 cursor-zoom-in hover:border-blue-500/40 transition-colors bg-black/40 group relative"
+                      >
+                        <img src={s.image} alt={s.title} className="w-full h-auto max-h-36 object-cover object-top transition-transform group-hover:scale-[1.02] duration-200" />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs font-semibold text-white">
+                          Agrandir la capture d'écran
+                        </div>
+                      </div>
+                    )}
+
+                    <ul className="space-y-2">
+                      {s.details.map((d, i) => (
+                        <li key={i} className="text-[11px] text-white/50 flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                          <span>{d}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))}
             </div>
@@ -380,6 +425,21 @@ export default function Documentation() {
         )}
 
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 z-[99999] bg-black/85 flex items-center justify-center p-6 cursor-zoom-out animate-fade-in"
+        >
+          <div className="relative max-w-[90vw] max-h-[90vh] rounded-xl overflow-hidden border border-white/20 shadow-2xl bg-gray-950">
+            <img src={selectedImage} alt="Screen capture" className="w-full h-auto max-h-[85vh] object-contain" />
+            <div className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/10 text-white select-none transition-colors">
+              Fermer [Esc]
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

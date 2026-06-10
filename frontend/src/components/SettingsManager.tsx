@@ -30,6 +30,8 @@ export default function SettingsManager({ currentUser }: SettingsManagerProps) {
 
   const userRole = currentUser?.role || 'LECTEUR_GLOBAL'
 
+  const [contextualHelp, setContextualHelp] = useState(localStorage.getItem('pref_contextual_help') !== 'false')
+
   // Set initial tab based on role permissions
   useEffect(() => {
     if (userRole === 'ADMIN') {
@@ -47,6 +49,8 @@ export default function SettingsManager({ currentUser }: SettingsManagerProps) {
       localStorage.setItem('pref_theme', theme)
       localStorage.setItem('pref_density', density)
       localStorage.setItem('pref_compact_ledger', compactLedger ? 'true' : 'false')
+      localStorage.setItem('pref_contextual_help', contextualHelp ? 'true' : 'false')
+      window.dispatchEvent(new Event('settings-updated'))
       setLoading(false)
       setSuccessMsg('Préférences enregistrées avec succès !')
       setTimeout(() => setSuccessMsg(''), 3000)
@@ -369,6 +373,19 @@ export default function SettingsManager({ currentUser }: SettingsManagerProps) {
                   />
                   <label htmlFor="compactLedgerCheckbox" className="text-xs text-white/80 cursor-pointer">
                     Toujours condenser le Grand Livre en affichage réduit
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-3 py-2 col-span-2">
+                  <input
+                    type="checkbox"
+                    id="contextualHelpCheckbox"
+                    checked={contextualHelp}
+                    onChange={(e) => setContextualHelp(e.target.checked)}
+                    className="w-4 h-4 rounded bg-black/40 border border-white/10 text-blue-600 focus:ring-0"
+                  />
+                  <label htmlFor="contextualHelpCheckbox" className="text-xs text-white/80 cursor-pointer">
+                    Activer l'aide contextuelle au survol des éléments de l'interface
                   </label>
                 </div>
               </div>
