@@ -12,6 +12,8 @@ import Login from './components/Login'
 import ChangePassword from './components/ChangePassword'
 import UserManager from './components/UserManager'
 import Documentation from './components/Documentation'
+import SettingsManager from './components/SettingsManager'
+
 
 
 type WindowType = 'curriculum' | 'students' | 'grades' | 'stats' | 'settings' | 'ledger' | 'jury' | 'comparator' | 'users' | 'documentation'
@@ -83,7 +85,7 @@ function App() {
     { id: 'stats' as WindowType, label: 'Statistiques', icon: BarChart3, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
     { id: 'users' as WindowType, label: 'Utilisateurs', icon: Shield, roles: ['ADMIN'] },
     { id: 'documentation' as WindowType, label: 'Aide & Règles', icon: HelpCircle, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
-    { id: 'settings' as WindowType, label: 'Configuration', icon: Settings, roles: ['ADMIN'] },
+    { id: 'settings' as WindowType, label: 'Configuration', icon: Settings, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
   ];
 
   const menuItems = allMenuItems.filter(item => item.roles.includes(user.role));
@@ -145,6 +147,7 @@ function App() {
       case 'stats': content = <StatsDashboard />; break;
       case 'users': content = <UserManager />; break;
       case 'documentation': content = <Documentation />; break;
+      case 'settings': content = <SettingsManager currentUser={user} />; break;
       default: content = <div className="p-4">Paramètres en cours de développement...</div>
     }
 
