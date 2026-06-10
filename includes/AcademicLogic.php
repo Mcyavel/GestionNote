@@ -318,15 +318,32 @@ class AcademicLogic {
             $annualBccs[] = $moyAnnuelle;
         }
 
-        $validScores = array_filter($annualBccs, function($avg) {
-            return $avg !== null && $avg !== 'DEF';
-        });
-        $average = null;
-        if (!empty($validScores)) {
-            $average = round(array_sum($validScores) / count($validScores), 2);
+        $totalStudentUeSum = 0;
+        $totalStudentUeCoeff = 0;
+        $studentDef = false;
+        $processedUeIds = [];
+
+        foreach ($bccs as $bccId => $bcc) {
+            foreach ($bcc['ues'] as $ueId => $ue) {
+                if (in_array($ueId, $processedUeIds)) continue;
+                $processedUeIds[] = $ueId;
+
+                $ueVal = $ueAverages[$ueId] ?? null;
+                if ($ueVal === 'DEF') {
+                    $studentDef = true;
+                } elseif ($ueVal !== null) {
+                    $totalStudentUeSum += ((float)$ueVal * $ue['coeff']);
+                    $totalStudentUeCoeff += $ue['coeff'];
+                }
+            }
         }
-        if (in_array('DEF', $annualBccs, true)) {
+
+        if ($studentDef) {
             $average = 'DEF';
+        } elseif ($totalStudentUeCoeff > 0) {
+            $average = round($totalStudentUeSum / $totalStudentUeCoeff, 2);
+        } else {
+            $average = null;
         }
 
         $status = self::calculateYearValidation($annualBccs, $rules);

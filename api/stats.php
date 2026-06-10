@@ -1005,11 +1005,28 @@ if ($method === 'GET') {
                         $admisCount++;
                     }
 
-                    $validScores = array_filter($studentGrades['bcc_annuel'], function($avg) {
-                        return $avg !== null && $avg !== 'DEF';
-                    });
-                    if (!empty($validScores)) {
-                        $studAvg = array_sum($validScores) / count($validScores);
+                    $totalStudentUeSum = 0;
+                    $totalStudentUeCoeff = 0;
+                    $studentDef = false;
+                    $processedUeIds = [];
+
+                    foreach ($structure['bcc'] as $bcc) {
+                        foreach ($bcc['ue'] as $ue) {
+                            if (in_array($ue['id'], $processedUeIds)) continue;
+                            $processedUeIds[] = $ue['id'];
+
+                            $ueVal = $studentUeGrades[$ue['id']] ?? null;
+                            if ($ueVal === 'DEF') {
+                                $studentDef = true;
+                            } elseif ($ueVal !== null) {
+                                $totalStudentUeSum += ((float)$ueVal * $ue['coeff']);
+                                $totalStudentUeCoeff += $ue['coeff'];
+                            }
+                        }
+                    }
+
+                    if (!$studentDef && $totalStudentUeCoeff > 0) {
+                        $studAvg = $totalStudentUeSum / $totalStudentUeCoeff;
                         $promoAverages[] = $studAvg;
                     }
                 }

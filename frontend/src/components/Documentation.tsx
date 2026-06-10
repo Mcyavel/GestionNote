@@ -120,8 +120,9 @@ export default function Documentation() {
       },
       {
         title: "4. Règle de Validation de l'Année (Moyenne & Statuts)",
-        formula: "Moyenne Générale = Moyenne de tous les BCC Annuels",
+        formula: "Moyenne Générale = Somme(Moyenne UE * Coeff UE) / Somme(Coeff UE)",
         details: [
+          "Moyenne générale calculée comme la moyenne pondérée de toutes les UEs constituant l'année d'inscription, sans passer par les moyennes intermédiaires de BCC.",
           "Le statut de l'étudiant est déterminé selon les règles de validation enregistrées pour sa promotion (configurables dans l'écran de modification de l'année) :",
           "Seuil de validation d'un BCC : Généralement 10.0.",
           "Seuil minimal annuel toléré : Généralement 9.0 (note éliminatoire si un BCC annuel est en dessous).",
