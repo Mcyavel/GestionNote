@@ -172,6 +172,7 @@ export default function UserManager() {
           <button
             onClick={() => setShowAdd(!showAdd)}
             className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            data-help="Créer un nouvel utilisateur avec un rôle et des droits spécifiques"
           >
             <Plus className="w-4 h-4" /> Nouvel Utilisateur
           </button>
@@ -187,6 +188,7 @@ export default function UserManager() {
                 value={newUsername}
                 onChange={e => setNewUsername(e.target.value)}
                 className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                data-help="Saisissez l'identifiant de connexion unique de l'utilisateur"
               />
               <input
                 type="password"
@@ -194,6 +196,7 @@ export default function UserManager() {
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                data-help="Saisissez un mot de passe provisoire que l'utilisateur devra modifier lors de sa première connexion"
               />
               <select
                 value={newRole}
@@ -202,6 +205,7 @@ export default function UserManager() {
                   if (!e.target.value.includes('PROMO')) setNewAnneeIds([]);
                 }}
                 className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                data-help="Sélectionnez le niveau d'autorisation (rôle) pour cet utilisateur afin de restreindre ses actions"
               >
                 <option value="ADMIN">ADMIN</option>
                 <option value="SCOLARITE">SCOLARITE</option>
@@ -213,6 +217,7 @@ export default function UserManager() {
               <button
                 onClick={handleCreate}
                 className="bg-green-600 hover:bg-green-500 text-white rounded-lg flex items-center justify-center gap-2 py-2"
+                data-help="Créer le compte utilisateur et l'enregistrer dans le système"
               >
                 <Save className="w-4 h-4" /> Créer
               </button>
@@ -329,7 +334,7 @@ export default function UserManager() {
                     <td className="p-4 flex gap-2 justify-end">
                       {editingId === user.id ? (
                         <>
-                          <button onClick={() => handleUpdate(user.id)} className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded" title="Enregistrer">
+                          <button onClick={() => handleUpdate(user.id)} className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded" title="Enregistrer" data-help="Enregistrer les modifications de rôle et de restrictions">
                             <Save className="w-4 h-4" />
                           </button>
                           <button onClick={() => setEditingId(null)} className="p-1.5 bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 rounded" title="Annuler">
@@ -338,13 +343,13 @@ export default function UserManager() {
                         </>
                       ) : (
                         <>
-                          <button onClick={() => startEdit(user)} className="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded" title="Modifier rôles">
+                          <button onClick={() => startEdit(user)} className="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded" title="Modifier rôles" data-help="Modifier le rôle ou les restrictions de promotions pour cet utilisateur">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleResetPassword(user.id)} className="p-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded" title="Réinitialiser MDP">
+                          <button onClick={() => handleResetPassword(user.id)} className="p-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded" title="Réinitialiser MDP" data-help="Générer un nouveau mot de passe provisoire pour cet utilisateur">
                             <RefreshCw className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete(user.id)} className="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded" title="Supprimer">
+                          <button onClick={() => handleDelete(user.id)} className="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded" title="Supprimer" data-help="Supprimer définitivement ce compte utilisateur">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </>

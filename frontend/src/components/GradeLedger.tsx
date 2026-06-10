@@ -254,6 +254,7 @@ const GradeLedger: React.FC = () => {
                             className="bg-transparent text-white font-bold text-sm outline-none cursor-pointer"
                             value={selectedAnnee || ''}
                             onChange={e => setSelectedAnnee(Number(e.target.value))}
+                            data-help="Sélectionner la promotion d'étudiants active"
                         >
                             {annees.filter(a => a.is_maquette === 0 && (!a.archived || a.id === selectedAnnee)).map(a => <option key={a.id} value={a.id} className="bg-slate-900">{a.nom}</option>)}
                         </select>
@@ -267,15 +268,16 @@ const GradeLedger: React.FC = () => {
                             className="bg-transparent text-white text-sm outline-none placeholder:text-white/20 w-32"
                             value={location}
                             onChange={e => setLocation(e.target.value)}
+                            data-help="Filtrer les étudiants par provenance ou lieu (ex: Aix, Marseille)"
                         />
                     </div>
                 </div>
 
                 {/* Onglets */}
                 <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
-                    <button onClick={() => setActiveTab('s1')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 's1' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`}>{s1Nom}</button>
-                    <button onClick={() => setActiveTab('s2')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 's2' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`}>{s2Nom}</button>
-                    <button onClick={() => setActiveTab('annual')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'annual' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`}>Annuel</button>
+                    <button onClick={() => setActiveTab('s1')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 's1' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`} data-help="Afficher le détail des notes de toutes les matières pour le Semestre 1">{s1Nom}</button>
+                    <button onClick={() => setActiveTab('s2')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 's2' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`} data-help="Afficher le détail des notes de toutes les matières pour le Semestre 2">{s2Nom}</button>
+                    <button onClick={() => setActiveTab('annual')} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'annual' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'}`} data-help="Afficher la vue récapitulative annuelle avec moyennes de BCC, moyenne générale, rangs, mentions et statuts de validation">Annuel</button>
                 </div>
 
                 {/* Tri (seulement en annuel) */}
@@ -287,6 +289,7 @@ const GradeLedger: React.FC = () => {
                             className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                                 sortBy === 'alpha' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
                             }`}
+                            data-help="Trier les étudiants par ordre alphabétique"
                         >
                             Nom
                         </button>
@@ -295,6 +298,7 @@ const GradeLedger: React.FC = () => {
                             className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                                 sortBy === 'rank' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
                             }`}
+                            data-help="Trier les étudiants par leur rang dans la promotion"
                         >
                             Rang
                         </button>

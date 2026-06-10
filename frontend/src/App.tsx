@@ -57,7 +57,75 @@ function App() {
       })
       .finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    let tooltipDiv: HTMLDivElement | null = null;
 
+    const handleMouseOver = (e: MouseEvent) => {
+      const enabled = localStorage.getItem('pref_contextual_help') !== 'false';
+      if (!enabled) return;
+
+      const target = e.target as HTMLElement;
+      const helpElement = target.closest('[data-help]') as HTMLElement;
+      if (!helpElement) return;
+
+      const helpText = helpElement.getAttribute('data-help');
+      if (!helpText) return;
+
+      if (!tooltipDiv) {
+        tooltipDiv = document.createElement('div');
+        tooltipDiv.className = 'fixed z-[99999] max-w-xs p-3 bg-gray-950/90 text-white text-[11px] leading-relaxed rounded-xl shadow-2xl border border-white/20 backdrop-blur-md pointer-events-none transition-opacity duration-200 opacity-0';
+        tooltipDiv.innerHTML = `<div class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span></span></div>`;
+        document.body.appendChild(tooltipDiv);
+      }
+      
+      tooltipDiv.querySelector('span')!.textContent = helpText;
+
+      const rect = helpElement.getBoundingClientRect();
+      const tooltipRect = tooltipDiv.getBoundingClientRect();
+      
+      let top = rect.top - tooltipRect.height - 8;
+      let left = rect.left + (rect.width - tooltipRect.width) / 2;
+
+      if (top < 8) {
+        top = rect.bottom + 8;
+      }
+      if (left < 8) {
+        left = 8;
+      } else if (left + tooltipRect.width > window.innerWidth - 8) {
+        left = window.innerWidth - tooltipRect.width - 8;
+      }
+
+      tooltipDiv.style.top = `${top}px`;
+      tooltipDiv.style.left = `${left}px`;
+      tooltipDiv.style.opacity = '1';
+    };
+
+    const handleMouseOut = () => {
+      if (tooltipDiv) {
+        tooltipDiv.style.opacity = '0';
+        const temp = tooltipDiv;
+        tooltipDiv = null;
+        setTimeout(() => {
+          if (temp && temp.parentNode) {
+            temp.parentNode.removeChild(temp);
+          }
+        }, 200);
+      }
+    };
+
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('click', handleMouseOut);
+
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      document.removeEventListener('click', handleMouseOut);
+      if (tooltipDiv && tooltipDiv.parentNode) {
+        tooltipDiv.parentNode.removeChild(tooltipDiv);
+      }
+    };
+  }, []);
   const handleLogout = async () => {
     await fetch('/api/auth.php?action=logout', { method: 'POST' });
     setUser(null);

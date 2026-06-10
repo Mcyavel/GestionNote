@@ -1537,6 +1537,7 @@ const StatsDashboard: React.FC = () => {
             <button 
               onClick={() => setShowPromoSelector(!showPromoSelector)}
               className="flex items-center gap-2 bg-white/5 border border-white/10 hover:border-white/20 rounded-xl px-4 py-2 text-white font-bold text-xs outline-none cursor-pointer transition-all active:scale-95"
+              data-help="Cliquer pour cocher ou décocher les promotions à inclure dans les analyses statistiques globales"
             >
               <Calendar className="w-4 h-4 text-white/30" />
               <span>Promotions ({selectedAnnees.length} sélectionnée{selectedAnnees.length > 1 ? 's' : ''})</span>
@@ -1597,6 +1598,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'promo' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Aperçu global de la promotion : taux d'admission, moyenne de promo, médiane et répartition des décisions de jury"
           >
             <BarChart3 className="w-3.5 h-3.5" />
             Promotion
@@ -1606,6 +1608,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'semesters' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Statistiques détaillées par semestre et par Bloc de Compétences (BCC)"
           >
             <TrendingUp className="w-3.5 h-3.5" />
             Semestres & BCC
@@ -1615,6 +1618,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'provenance' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Analyser la performance et le taux d'admission des étudiants selon leur diplôme/établissement d'origine"
           >
             <MapPin className="w-3.5 h-3.5" />
             Provenance
@@ -1624,6 +1628,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'ecues' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Classement des matières (ECUE) ayant les meilleures moyennes ou les taux d'échec les plus élevés (Tops/Flops)"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Tops / Flops
@@ -1633,6 +1638,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'progressions' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Rechercher un étudiant et analyser son parcours historique d'inscription et de capitalisation"
           >
             <History className="w-3.5 h-3.5" />
             Suivi Cursus
@@ -1642,6 +1648,7 @@ const StatsDashboard: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'temporal' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Visualiser l'évolution pluriannuelle des moyennes de promotion et taux d'admission"
           >
             <LineIcon className="w-3.5 h-3.5" />
             Évolution

@@ -631,6 +631,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
               value={selectedAnnee || ''}
               disabled={step > 1}
               onChange={e => setSelectedAnnee(Number(e.target.value))}
+              data-help="Sélectionner la promotion de cours à comparer avec le fichier Excel"
             >
               {annees.filter(a => a.is_maquette === 0 && (!a.archived || a.id === selectedAnnee)).map(a => <option key={a.id} value={a.id} className="bg-slate-900">{a.nom}</option>)}
             </select>
@@ -639,6 +640,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
             <button 
               onClick={handleReset}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-white/10 text-white/80 hover:bg-white/20 transition-all"
+              data-help="Annuler l'analyse actuelle et revenir au chargement de fichier"
             >
               <RefreshCw className="w-3 h-3" />
               Réinitialiser
@@ -674,7 +676,10 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
               </p>
             </div>
 
-            <div className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/10 rounded-3xl hover:border-amber-500/50 hover:bg-amber-500/5 transition-all cursor-pointer relative group">
+            <div 
+              className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/10 rounded-3xl hover:border-amber-500/50 hover:bg-amber-500/5 transition-all cursor-pointer relative group"
+              data-help="Glissez-déposez ou cliquez ici pour charger le fichier Excel d'export Apogée contenant les notes officielles"
+            >
               <input 
                 type="file" 
                 accept=".xlsx,.xlsm" 
@@ -707,6 +712,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
               <button 
                 onClick={runComparison}
                 className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg transition-all"
+                data-help="Démarrer la comparaison ligne par ligne entre le fichier Excel et la base de données de l'application"
               >
                 Lancer la comparaison
                 <ArrowRight className="w-4 h-4" />
@@ -768,6 +774,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
                                   updateMapping(index, type as any, Number(id));
                                 }
                               }}
+                              data-help="Associer cette colonne Excel Apogée à un BCC ou une UE de la maquette locale"
                             >
                               {options}
                             </select>
@@ -800,6 +807,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
                     className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                       compareMode === 'final' ? 'bg-amber-500 text-slate-950 shadow-lg' : 'text-white/30 hover:text-white/60'
                     }`}
+                    data-help="Comparer avec les moyennes finales après application des décisions du jury"
                   >
                     Moyennes finales (Jury incl.)
                   </button>
@@ -808,6 +816,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
                     className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                       compareMode === 'raw' ? 'bg-amber-500 text-slate-950 shadow-lg' : 'text-white/30 hover:text-white/60'
                     }`}
+                    data-help="Comparer uniquement avec les notes brutes avant compensation ou décision de jury"
                   >
                     Notes brutes (avant jury)
                   </button>
@@ -824,6 +833,7 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
                     className="bg-slate-950 border border-white/10 rounded-xl pl-9 pr-4 py-1.5 text-xs text-white placeholder:text-white/20 w-44 outline-none focus:border-amber-500/50"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
+                    data-help="Rechercher un étudiant par son nom ou son numéro étudiant dans le rapport"
                   />
                 </div>
                 
@@ -831,24 +841,28 @@ const ExcelComparator: React.FC<ExcelComparatorProps> = () => {
                   <button 
                     onClick={() => setFilterType('errors')}
                     className={`px-3 py-1.5 rounded-lg transition-all ${filterType === 'errors' ? 'bg-red-600/30 text-red-300 border border-red-500/20' : 'text-white/30 hover:text-white/60'}`}
+                    data-help="Filtrer pour n'afficher que les étudiants présentant des différences de notes"
                   >
                     Divergences ({discrepancies.length})
                   </button>
                   <button 
                     onClick={() => setFilterType('all')}
                     className={`px-3 py-1.5 rounded-lg transition-all ${filterType === 'all' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/20' : 'text-white/30 hover:text-white/60'}`}
+                    data-help="Afficher tous les étudiants comparés"
                   >
                     Tous les étudiants ({comparedStudentsCount})
                   </button>
                   <button 
                     onClick={() => setFilterType('missing_excel')}
                     className={`px-3 py-1.5 rounded-lg transition-all ${filterType === 'missing_excel' ? 'bg-orange-600/30 text-orange-300 border border-orange-500/20' : 'text-white/30 hover:text-white/60'}`}
+                    data-help="Afficher les étudiants présents dans l'application mais absents du fichier Excel"
                   >
                     Absents Apogée ({missingStudents.filter(s => s.source === 'app').length})
                   </button>
                   <button 
                     onClick={() => setFilterType('missing_app')}
                     className={`px-3 py-1.5 rounded-lg transition-all ${filterType === 'missing_app' ? 'bg-purple-600/30 text-purple-300 border border-purple-500/20' : 'text-white/30 hover:text-white/60'}`}
+                    data-help="Afficher les étudiants présents dans le fichier Excel mais absents de l'application"
                   >
                     Absents App ({missingStudents.filter(s => s.source === 'excel').length})
                   </button>

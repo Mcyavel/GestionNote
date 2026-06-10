@@ -293,7 +293,11 @@ const CurriculumManager: React.FC = () => {
       <div key={annee.id} className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden shadow-2xl backdrop-blur-sm transition-opacity ${annee.archived ? 'opacity-50' : ''}`}>
         <div className="bg-white/5 p-5 flex items-center justify-between border-b border-white/5">
           <div className="flex items-center gap-4">
-            <button onClick={() => toggleExpand(`a-${annee.id}`)} className="text-white/40 hover:text-white transition-colors">
+            <button 
+              onClick={() => toggleExpand(`a-${annee.id}`)} 
+              className="text-white/40 hover:text-white transition-colors"
+              data-help="Déplier ou replier la structure des semestres, BCC et UE pour cette maquette/promotion"
+            >
               {expanded[`a-${annee.id}`] ? <ChevronDown /> : <ChevronRight />}
             </button>
             {editingItem?.type === 'annee' && editingItem.id === annee.id ? renderInlineEdit() : (
@@ -317,10 +321,38 @@ const CurriculumManager: React.FC = () => {
             )}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => handleStartEdit('annee', annee)} className="p-2 text-white/20 hover:text-yellow-400" title="Modifier le Nom"><Edit2 className="h-4 w-4" /></button>
-            <button onClick={() => setEditingRules(annee.id)} className="p-2 text-white/20 hover:text-yellow-400 hover:bg-yellow-400/10 rounded-xl transition-all" title="Configuration Jury"><Settings2 className="h-4 w-4" /></button>
-            <button onClick={() => handleAddItem('semestre', annee.id)} className="p-2 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all" title="Nouveau Semestre"><Plus className="h-4 w-4" /></button>
-            <button onClick={() => handleDuplicateAnnee(annee.id, annee.nom)} className="p-2 text-white/20 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-xl transition-all" title="Dupliquer"><Copy className="h-4 w-4" /></button>
+            <button 
+              onClick={() => handleStartEdit('annee', annee)} 
+              className="p-2 text-white/20 hover:text-yellow-400" 
+              title="Modifier le Nom"
+              data-help="Modifier le nom de cette maquette ou promotion"
+            >
+              <Edit2 className="h-4 w-4" />
+            </button>
+            <button 
+              onClick={() => setEditingRules(annee.id)} 
+              className="p-2 text-white/20 hover:text-yellow-400 hover:bg-yellow-400/10 rounded-xl transition-all" 
+              title="Configuration Jury"
+              data-help="Configurer les règles de validation du jury (seuil de validation, tolérance de BCC sous le seuil, note minimale annuelle)"
+            >
+              <Settings2 className="h-4 w-4" />
+            </button>
+            <button 
+              onClick={() => handleAddItem('semestre', annee.id)} 
+              className="p-2 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all" 
+              title="Nouveau Semestre"
+              data-help="Ajouter un nouveau semestre (ex: S1) à cette maquette/promotion"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <button 
+              onClick={() => handleDuplicateAnnee(annee.id, annee.nom)} 
+              className="p-2 text-white/20 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-xl transition-all" 
+              title="Dupliquer"
+              data-help="Dupliquer la structure complète de cette maquette/promotion"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
             
             {/* Bouton Archiver / Désarchiver */}
             <button 
@@ -329,11 +361,19 @@ const CurriculumManager: React.FC = () => {
                 annee.archived ? 'text-red-400 hover:bg-red-400/10' : 'text-white/20 hover:text-amber-400 hover:bg-amber-400/10'
               }`}
               title={annee.archived ? "Désarchiver" : "Archiver"}
+              data-help="Archiver ou désarchiver. Les promotions archivées ne sont plus affichées par défaut."
             >
               <Archive className="h-4 w-4" />
             </button>
 
-            <button onClick={() => handleDeleteItem('annee', annee.id)} className="p-2 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
+            <button 
+              onClick={() => handleDeleteItem('annee', annee.id)} 
+              className="p-2 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all" 
+              title="Supprimer"
+              data-help="Supprimer définitivement cette maquette ou promotion et toute sa structure interne"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
@@ -341,15 +381,33 @@ const CurriculumManager: React.FC = () => {
           <div className="p-6 bg-yellow-500/5 border-b border-white/5 flex flex-wrap items-end gap-6">
             <div className="flex-1 min-w-[150px] space-y-1.5">
               <label className="text-[10px] text-yellow-500/50 font-black uppercase tracking-widest">Seuil Validation</label>
-              <input type="text" defaultValue={annee.rules.seuil_validation_bcc} id={`s-${annee.id}`} className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" />
+              <input 
+                type="text" 
+                defaultValue={annee.rules.seuil_validation_bcc} 
+                id={`s-${annee.id}`} 
+                className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" 
+                data-help="Seuil de moyenne requis pour valider automatiquement un BCC (généralement 10)"
+              />
             </div>
             <div className="flex-1 min-w-[150px] space-y-1.5">
               <label className="text-[10px] text-yellow-500/50 font-black uppercase tracking-widest">Nombre Toléré</label>
-              <input type="number" defaultValue={annee.rules.nb_bcc_autorises_sous_seuil} id={`n-${annee.id}`} className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" />
+              <input 
+                type="number" 
+                defaultValue={annee.rules.nb_bcc_autorises_sous_seuil} 
+                id={`n-${annee.id}`} 
+                className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" 
+                data-help="Nombre maximal de BCC non validés (sous la moyenne) tolérés pour compenser l'année"
+              />
             </div>
             <div className="flex-1 min-w-[150px] space-y-1.5">
               <label className="text-[10px] text-yellow-500/50 font-black uppercase tracking-widest">Note Minimale</label>
-              <input type="text" defaultValue={annee.rules.seuil_minimal_annuel} id={`m-${annee.id}`} className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" />
+              <input 
+                type="text" 
+                defaultValue={annee.rules.seuil_minimal_annuel} 
+                id={`m-${annee.id}`} 
+                className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-yellow-500 outline-none" 
+                data-help="Note plancher en dessous de laquelle aucune compensation de BCC n'est autorisée par le jury"
+              />
             </div>
             <button 
               onClick={() => handleUpdateRules(annee.id, {
@@ -358,6 +416,7 @@ const CurriculumManager: React.FC = () => {
                 seuil_minimal_annuel: (document.getElementById(`m-${annee.id}`) as HTMLInputElement).value
               })}
               className="bg-yellow-500 text-black px-8 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-yellow-400 transition-all shadow-lg"
+              data-help="Sauvegarder les règles de validation pour cette promotion ou maquette"
             >
               Appliquer
             </button>
@@ -376,7 +435,13 @@ const CurriculumManager: React.FC = () => {
                       <button onClick={() => handleStartEdit('semestre', semestre)} className="opacity-0 group-hover:opacity-100 p-1 hover:text-white transition-opacity"><Edit2 className="w-2.5 h-2.5" /></button>
                     </h4>
                   )}
-                  <button onClick={() => handleAddItem('bcc', semestre.id)} className="text-[10px] font-bold bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all">+ AJOUTER BCC</button>
+                  <button 
+                    onClick={() => handleAddItem('bcc', semestre.id)} 
+                    className="text-[10px] font-bold bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all"
+                    data-help="Ajouter un Bloc de Connaissances et de Compétences (BCC) dans ce semestre"
+                  >
+                    + AJOUTER BCC
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -392,7 +457,10 @@ const CurriculumManager: React.FC = () => {
                                 <button onClick={() => handleStartEdit('bcc', bcc)} className="opacity-0 group-hover:opacity-100 p-1 hover:text-yellow-400 transition-opacity"><Edit2 className="w-3 h-3" /></button>
                               </span>
                             )}
-                            <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-xl border border-white/5 shadow-inner">
+                            <div 
+                              className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-xl border border-white/5 shadow-inner"
+                              data-help="Jumeler ce BCC avec un BCC de l'autre semestre pour calculer une moyenne jumeau"
+                            >
                               <Link className={`w-3 h-3 ${isLinked ? 'text-blue-400' : 'text-white/20'}`} />
                               <select 
                                 className="bg-transparent text-[10px] text-white/50 outline-none cursor-pointer hover:text-white transition-colors max-w-[150px] font-bold"
@@ -412,8 +480,20 @@ const CurriculumManager: React.FC = () => {
                             </div>
                           </div>
                           <div className="flex gap-2 items-center">
-                            <button onClick={() => handleAddItem('ue', bcc.id)} className="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">+ UE</button>
-                            <button onClick={() => handleDeleteItem('bcc', bcc.id)} className="p-1.5 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"><Trash2 className="h-3.5 w-3.5" /></button>
+                            <button 
+                              onClick={() => handleAddItem('ue', bcc.id)} 
+                              className="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+                              data-help="Ajouter une nouvelle Unité d'Enseignement (UE) au BCC"
+                            >
+                              + UE
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteItem('bcc', bcc.id)} 
+                              className="p-1.5 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                              data-help="Supprimer définitivement ce BCC et ses UE dépendantes"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
                           </div>
                         </div>
 
@@ -436,7 +516,13 @@ const CurriculumManager: React.FC = () => {
                                           <span className="flex-1 hover:text-white/60 transition-colors cursor-default">• {ecue.nom}</span>
                                           <span className="text-[8px] opacity-40 font-bold">{ecue.credits} ECTS / {ecue.heures || 0}H</span>
                                           <button onClick={() => handleStartEdit('ecue', ecue)} className="opacity-0 group-hover/ecue:opacity-100 p-0.5 hover:text-yellow-400 transition-all"><Edit2 className="w-2.5 h-2.5" /></button>
-                                          <button onClick={() => handleDeleteItem('ecue', ecue.id)} className="opacity-0 group-hover/ecue:opacity-100 hover:text-red-400 transition-all"><Trash2 className="h-2.5 w-2.5" /></button>
+                                          <button 
+                                            onClick={() => handleDeleteItem('ecue', ecue.id)} 
+                                            className="opacity-0 group-hover/ecue:opacity-100 hover:text-red-400 transition-all"
+                                            data-help="Supprimer cette matière (ECUE)"
+                                          >
+                                            <Trash2 className="h-2.5 w-2.5" />
+                                          </button>
                                         </div>
                                       )}
                                     </div>
@@ -444,8 +530,20 @@ const CurriculumManager: React.FC = () => {
                                 </div>
                               </div>
                               <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleAddItem('ecue', ue.id)} className="p-1.5 bg-white/5 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"><Plus className="h-3 w-3" /></button>
-                                <button onClick={() => handleDeleteItem('ue', ue.id)} className="p-1.5 bg-white/5 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"><Trash2 className="h-3 w-3" /></button>
+                                <button 
+                                  onClick={() => handleAddItem('ecue', ue.id)} 
+                                  className="p-1.5 bg-white/5 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"
+                                  data-help="Ajouter une matière (ECUE) à cette UE"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteItem('ue', ue.id)} 
+                                  className="p-1.5 bg-white/5 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                  data-help="Supprimer cette UE et ses matières associées"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
                               </div>
                             </div>
                           ))}
@@ -472,6 +570,7 @@ const CurriculumManager: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'maquettes' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Afficher l'éditeur de Maquettes Pédagogiques (le canevas des cours et coefficients)"
           >
             <Layers className="w-3.5 h-3.5" />
             Maquettes Pédagogiques
@@ -481,6 +580,7 @@ const CurriculumManager: React.FC = () => {
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'promotions' ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:text-white/60'
             }`}
+            data-help="Afficher la liste des Promotions Actives (les instances de cours sur lesquelles sont inscrits les étudiants)"
           >
             <GraduationCap className="w-3.5 h-3.5" />
             Promotions Actives
@@ -492,6 +592,7 @@ const CurriculumManager: React.FC = () => {
           <button 
             onClick={() => handleAddItem('annee')} 
             className="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
+            data-help="Créer une toute nouvelle maquette d'année vide (ex: Master 2 MIAGE)"
           >
             <Plus className="w-4 h-4" /> Nouvelle Maquette
           </button>
@@ -499,6 +600,7 @@ const CurriculumManager: React.FC = () => {
           <button 
             onClick={() => setShowCreatePromo(!showCreatePromo)} 
             className="bg-emerald-600 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+            data-help="Créer une promotion en instanciant une maquette existante"
           >
             <Plus className="w-4 h-4" /> Appliquer à une Promotion
           </button>
@@ -522,6 +624,7 @@ const CurriculumManager: React.FC = () => {
                 className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2 text-white text-xs outline-none focus:border-emerald-500" 
                 value={newPromoNom}
                 onChange={e => setNewPromoNom(e.target.value)}
+                data-help="Saisissez un nom unique pour identifier cette promotion (ex: Marseille Alternance 2026)"
               />
             </div>
             <div className="flex-1 min-w-[200px] space-y-1.5">
@@ -530,6 +633,7 @@ const CurriculumManager: React.FC = () => {
                 className="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-2 text-white text-xs outline-none cursor-pointer focus:border-emerald-500"
                 value={selectedMaquetteId || ''}
                 onChange={e => setSelectedMaquetteId(Number(e.target.value))}
+                data-help="Choisissez la maquette modèle dont la structure sera copiée pour cette nouvelle promotion"
               >
                 {maquettes.filter(m => !m.archived).map(m => (
                   <option key={m.id} value={m.id} className="bg-slate-900">{m.nom}</option>
@@ -543,6 +647,7 @@ const CurriculumManager: React.FC = () => {
               <button 
                 onClick={handleCreatePromotion}
                 className="bg-emerald-600 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg"
+                data-help="Créer la promotion active dans le système avec la structure sélectionnée"
               >
                 Créer la Promotion
               </button>

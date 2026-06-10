@@ -181,6 +181,7 @@ const StudentManager: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            data-help="Saisissez un nom, prénom ou email pour filtrer instantanément la liste des étudiants"
           />
         </div>
         <div className="flex gap-3">
@@ -189,10 +190,15 @@ const StudentManager: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
                 showCreate ? 'bg-red-500/20 text-red-300 border-red-500/30' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'
             }`}
+            data-help="Ouvrir le formulaire pour saisir manuellement les informations d'un nouvel étudiant"
           >
             {showCreate ? <><X className="h-4 w-4" /> Annuler</> : <><UserPlus className="h-4 w-4" /> Ajouter</>}
           </button>
-          <button onClick={() => setShowImport(true)} className="flex items-center gap-2 bg-blue-600/80 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors shadow-lg border border-blue-400/30">
+          <button 
+            onClick={() => setShowImport(true)} 
+            className="flex items-center gap-2 bg-blue-600/80 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors shadow-lg border border-blue-400/30"
+            data-help="Lancer l'assistant d'importation d'étudiants (ou de notes) depuis un fichier CSV ou Excel"
+          >
             <Save className="h-4 w-4" /> Importer
           </button>
         </div>
@@ -205,30 +211,69 @@ const StudentManager: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Nom</label>
-                    <input required type="text" className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" value={formData.nom} onChange={e => setFormData({...formData, nom: e.target.value})} />
+                    <input 
+                      required 
+                      type="text" 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      value={formData.nom} 
+                      onChange={e => setFormData({...formData, nom: e.target.value})} 
+                      data-help="Nom de famille de l'étudiant (obligatoire)"
+                    />
                 </div>
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Prénom</label>
-                    <input type="text" className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" value={formData.prenom} onChange={e => setFormData({...formData, prenom: e.target.value})} />
+                    <input 
+                      type="text" 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      value={formData.prenom} 
+                      onChange={e => setFormData({...formData, prenom: e.target.value})} 
+                      data-help="Prénom de l'étudiant"
+                    />
                 </div>
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Email</label>
-                    <input required type="email" className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                    <input 
+                      required 
+                      type="email" 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      value={formData.email} 
+                      onChange={e => setFormData({...formData, email: e.target.value})} 
+                      data-help="Adresse e-mail institutionnelle ou personnelle de l'étudiant (obligatoire)"
+                    />
                 </div>
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Promotion</label>
-                    <input required type="number" className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" value={formData.annee_inscription} onChange={e => setFormData({...formData, annee_inscription: parseInt(e.target.value)})} />
+                    <input 
+                      required 
+                      type="number" 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      value={formData.annee_inscription} 
+                      onChange={e => setFormData({...formData, annee_inscription: parseInt(e.target.value)})} 
+                      data-help="Année civile d'inscription (ex: 2026) pour suivre la cohorte"
+                    />
                 </div>
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Formation</label>
-                    <select className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" value={formData.annee_id} onChange={e => setFormData({...formData, annee_id: e.target.value})}>
+                    <select 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      value={formData.annee_id} 
+                      onChange={e => setFormData({...formData, annee_id: e.target.value})}
+                      data-help="Associer directement cet étudiant à une promotion active (maquette instanciée) pour l'inscrire au cursus"
+                    >
                         <option value="">Non assignée</option>
                         {annees.filter(a => a.is_maquette === 0 && (!a.archived || a.id === Number(formData.annee_id))).map(a => <option key={a.id} value={a.id}>{a.nom}</option>)}
                     </select>
                 </div>
                 <div className="space-y-1">
                     <label className="text-[10px] uppercase text-white/40 font-bold ml-1">Provenance</label>
-                    <input type="text" className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" placeholder="ex: Aix, CPGE, IUT..." value={formData.provenance} onChange={e => setFormData({...formData, provenance: e.target.value})} />
+                    <input 
+                      type="text" 
+                      className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white outline-none focus:border-blue-500" 
+                      placeholder="ex: Aix, CPGE, IUT..." 
+                      value={formData.provenance} 
+                      onChange={e => setFormData({...formData, provenance: e.target.value})} 
+                      data-help="Établissement ou cursus d'origine de l'étudiant (ex: Aix, IUT, CPGE)"
+                    />
                 </div>
             </div>
             <div className="flex gap-3 mt-4">
@@ -280,6 +325,7 @@ const StudentManager: React.FC = () => {
                                 className="bg-transparent text-white/70 text-[11px] outline-none focus:text-white transition-colors cursor-pointer font-medium"
                                 value={student.annee_id || ''}
                                 onChange={e => handleQuickUpdateAnnee(student.id, e.target.value)}
+                                data-help="Changer rapidement la promotion de cours à laquelle cet étudiant est rattaché"
                             >
                                 <option value="" className="bg-slate-900">Non assignée</option>
                                 {annees.filter(a => a.is_maquette === 0 && (!a.archived || a.id === student.annee_id)).map(a => <option key={a.id} value={a.id} className="bg-slate-900">{a.nom}</option>)}
@@ -299,6 +345,7 @@ const StudentManager: React.FC = () => {
                                     onClick={() => setSelectedHistoryStudent(student)}
                                     className="flex items-center gap-1 bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 border border-violet-500/20 hover:border-violet-500/30 px-2 py-0.5 rounded text-[10px] font-bold transition-all shadow-sm"
                                     title="Voir le cursus historique de l'étudiant"
+                                    data-help="Ouvrir l'historique complet des inscriptions et moyennes de cet étudiant dans l'établissement"
                                 >
                                     <History className="h-3.5 w-3.5" /> Cursus
                                 </button>
@@ -312,8 +359,8 @@ const StudentManager: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handleStartEdit(student)} className="p-2 text-white/20 hover:text-yellow-400 hover:bg-yellow-400/10 rounded-lg transition-all" title="Modifier"><Edit2 className="h-4 w-4" /></button>
-                            <button onClick={() => handleDeleteStudent(student.id)} className="p-2 text-white/10 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" title="Supprimer"><Trash2 className="h-4 w-4" /></button>
+                            <button onClick={() => handleStartEdit(student)} className="p-2 text-white/20 hover:text-yellow-400 hover:bg-yellow-400/10 rounded-lg transition-all" title="Modifier" data-help="Modifier les informations personnelles de cet étudiant"><Edit2 className="h-4 w-4" /></button>
+                            <button onClick={() => handleDeleteStudent(student.id)} className="p-2 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all" title="Supprimer" data-help="Supprimer définitivement cet étudiant et ses inscriptions de la base"><Trash2 className="h-4 w-4" /></button>
                         </div>
                     </td>
                     </tr>

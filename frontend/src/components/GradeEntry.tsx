@@ -172,6 +172,7 @@ const GradeEntry: React.FC = () => {
                     setStudents([]);
                   }}
                   className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500 transition-all cursor-pointer"
+                  data-help="Sélectionnez la promotion active d'étudiants pour laquelle vous souhaitez saisir ou modifier des notes"
                 >
                   <option value="" className="text-white/30">Choisir une année...</option>
                   {annees.filter(a => a.is_maquette === 0 && (!a.archived || a.id === selectedAnneeId)).map(a => <option key={a.id} value={a.id} className="bg-slate-900">{a.nom}</option>)}
@@ -191,6 +192,7 @@ const GradeEntry: React.FC = () => {
                     setStudents([]);
                   }}
                   className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500 transition-all cursor-pointer disabled:opacity-50"
+                  data-help="Sélectionnez le semestre de cours concerné"
                 >
                   <option value="" className="text-white/30">Choisir un semestre...</option>
                   {currentAnnee?.semestres?.map((s: any) => (
@@ -216,6 +218,7 @@ const GradeEntry: React.FC = () => {
                     }
                   }}
                   className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500 transition-all cursor-pointer disabled:opacity-50"
+                  data-help="Sélectionnez la matière (ECUE) ou le bonus/malus pour lequel charger les notes des étudiants"
                 >
                   <option value="" className="text-white/30">Choisir un ECUE...</option>
                   {ecuesList.map((e: any) => (
@@ -234,7 +237,11 @@ const GradeEntry: React.FC = () => {
                 <div className="relative z-10 flex flex-col items-center">
                     <FileSpreadsheet className="h-16 w-16 mb-4 opacity-10" />
                     <p className="text-sm font-medium mb-8">Sélectionnez une matière pour commencer</p>
-                    <button onClick={() => setShowImport(true)} className="flex items-center gap-3 bg-white/10 text-white px-8 py-3 rounded-2xl font-bold hover:bg-white/20 transition-all border border-white/10 shadow-2xl">
+                    <button 
+                      onClick={() => setShowImport(true)} 
+                      className="flex items-center gap-3 bg-white/10 text-white px-8 py-3 rounded-2xl font-bold hover:bg-white/20 transition-all border border-white/10 shadow-2xl"
+                      data-help="Importer un tableau de notes complet (CSV ou Excel) pour l'ensemble des matières ou étudiants"
+                    >
                         <Upload className="w-5 h-5 text-blue-400" /> Import Global de Notes
                     </button>
                 </div>
@@ -248,13 +255,32 @@ const GradeEntry: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-3 flex-1 max-w-xs relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-                  <input type="text" placeholder="Filtrer promotion..." className="w-full pl-10 pr-4 py-2 bg-slate-900/50 border border-white/10 rounded-xl text-xs text-white outline-none focus:border-blue-500/50 transition-all" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <input 
+                    type="text" 
+                    placeholder="Filtrer promotion..." 
+                    className="w-full pl-10 pr-4 py-2 bg-slate-900/50 border border-white/10 rounded-xl text-xs text-white outline-none focus:border-blue-500/50 transition-all" 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    data-help="Rechercher un étudiant par son nom ou son prénom dans cette liste"
+                  />
                 </div>
                 <div className="flex gap-2">
                     {typeof selectedEcue !== 'string' && (
-                        <button onClick={() => setShowImport(true)} className="p-2 bg-white/5 text-white/40 hover:text-white rounded-xl transition-all border border-white/10" title="Importer"><Upload className="w-5 h-5" /></button>
+                        <button 
+                          onClick={() => setShowImport(true)} 
+                          className="p-2 bg-white/5 text-white/40 hover:text-white rounded-xl transition-all border border-white/10" 
+                          title="Importer"
+                          data-help="Importer un fichier Excel/CSV pour remplir automatiquement les notes de cette matière"
+                        >
+                          <Upload className="w-5 h-5" />
+                        </button>
                     )}
-                    <button onClick={saveGrades} disabled={saving} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg disabled:opacity-50">
+                    <button 
+                      onClick={saveGrades} 
+                      disabled={saving} 
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg disabled:opacity-50"
+                      data-help="Enregistrer définitivement sur le serveur les notes saisies dans le tableau ci-dessous"
+                    >
                         <Save className="h-4 w-4" /> {saving ? '...' : 'Sauvegarder'}
                     </button>
                 </div>
@@ -289,7 +315,14 @@ const GradeEntry: React.FC = () => {
                             </div>
                             </td>
                             <td className="px-6 py-4 text-center">
-                            <input type="text" className="w-20 text-center py-1.5 bg-slate-900 border border-white/10 rounded-lg font-black text-white focus:border-blue-500/50 outline-none transition-all placeholder:text-white/5 text-sm" value={student.valeur || ''} onChange={(e) => handleGradeChange(student.student_id, e.target.value)} placeholder="--" />
+                            <input 
+                               type="text" 
+                               className="w-20 text-center py-1.5 bg-slate-900 border border-white/10 rounded-lg font-black text-white focus:border-blue-500/50 outline-none transition-all placeholder:text-white/5 text-sm" 
+                               value={student.valeur || ''} 
+                               onChange={(e) => handleGradeChange(student.student_id, e.target.value)} 
+                               placeholder="--" 
+                               data-help="Saisissez une note de 0 à 20, ou ABI (Absent Injustifié), ABJ (Absent Justifié), DEF (Défaillant)"
+                             />
                             </td>
                             <td className="px-6 py-4">
                             {student.valeur !== '' ? (
