@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Settings, BookOpen, Scale, GitCompare, LogOut, Shield } from 'lucide-react'
+import { GraduationCap, LayoutDashboard, Users, FileSpreadsheet, BarChart3, Settings, BookOpen, Scale, GitCompare, LogOut, Shield, HelpCircle } from 'lucide-react'
 import CurriculumManager from './components/CurriculumManager'
 import StudentManager from './components/StudentManager'
 import GradeEntry from './components/GradeEntry'
@@ -11,8 +11,10 @@ import Window from './components/Window'
 import Login from './components/Login'
 import ChangePassword from './components/ChangePassword'
 import UserManager from './components/UserManager'
+import Documentation from './components/Documentation'
 
-type WindowType = 'curriculum' | 'students' | 'grades' | 'stats' | 'settings' | 'ledger' | 'jury' | 'comparator' | 'users'
+
+type WindowType = 'curriculum' | 'students' | 'grades' | 'stats' | 'settings' | 'ledger' | 'jury' | 'comparator' | 'users' | 'documentation'
 
 interface WindowState {
   id: WindowType;
@@ -35,6 +37,7 @@ function App() {
     comparator: { id: 'comparator', isOpen: false, isMinimized: false, zIndex: 10 },
     settings: { id: 'settings', isOpen: false, isMinimized: false, zIndex: 10 },
     users: { id: 'users', isOpen: false, isMinimized: false, zIndex: 10 },
+    documentation: { id: 'documentation', isOpen: false, isMinimized: false, zIndex: 10 },
   })
   
   const [maxZIndex, setMaxZIndex] = useState(10)
@@ -79,6 +82,7 @@ function App() {
     { id: 'comparator' as WindowType, label: 'Comparateur Apogée', icon: GitCompare, roles: ['ADMIN', 'SCOLARITE'] },
     { id: 'stats' as WindowType, label: 'Statistiques', icon: BarChart3, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
     { id: 'users' as WindowType, label: 'Utilisateurs', icon: Shield, roles: ['ADMIN'] },
+    { id: 'documentation' as WindowType, label: 'Aide & Règles', icon: HelpCircle, roles: ['ADMIN', 'SCOLARITE', 'LECTEUR_GLOBAL', 'LECTEUR_PROMO', 'ENSEIGNANT_GLOBAL', 'ENSEIGNANT_PROMO'] },
     { id: 'settings' as WindowType, label: 'Configuration', icon: Settings, roles: ['ADMIN'] },
   ];
 
@@ -140,6 +144,7 @@ function App() {
       case 'comparator': content = <ExcelComparator />; break;
       case 'stats': content = <StatsDashboard />; break;
       case 'users': content = <UserManager />; break;
+      case 'documentation': content = <Documentation />; break;
       default: content = <div className="p-4">Paramètres en cours de développement...</div>
     }
 
@@ -156,7 +161,7 @@ function App() {
         initialY={50 + menuItems.findIndex(m => m.id === id) * 30}
       >
         <div 
-          className={(id === 'ledger' || id === 'jury' || id === 'comparator') ? "w-[1200px] h-[700px] max-w-[90vw] max-h-[80vh]" : "w-[900px] h-[600px] max-w-[90vw] max-h-[80vh]"}
+          className={(id === 'ledger' || id === 'jury' || id === 'comparator' || id === 'documentation') ? "w-[1200px] h-[700px] max-w-[90vw] max-h-[80vh]" : "w-[900px] h-[600px] max-w-[90vw] max-h-[80vh]"}
           style={{ width: '100%', height: '100%' }}
         >
             {content}
