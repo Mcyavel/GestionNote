@@ -352,6 +352,37 @@ if ($method === 'GET') {
                         }
                     }
 
+                    // Fetch semesters and BM / Jury inputs
+                    $sem1 = (int)$bcc['semestre_id'];
+                    $sem2 = $twinId ? (int)$bccMapById[$twinId]['semestre_id'] : null;
+
+                    // BM 1
+                    $bmKey1 = $student['id'] . '|' . $sem1;
+                    $bm1_bonus = isset($bonusMalusMap[$bmKey1]) && $bonusMalusMap[$bmKey1]['bonus'] !== null ? (float)$bonusMalusMap[$bmKey1]['bonus'] : 0.0;
+                    $bm1_malus = isset($bonusMalusMap[$bmKey1]) && $bonusMalusMap[$bmKey1]['malus'] !== null ? (float)$bonusMalusMap[$bmKey1]['malus'] : 0.0;
+
+                    // BM 2
+                    $bm2_bonus = 0.0; $bm2_malus = 0.0;
+                    if ($sem2) {
+                        $bmKey2 = $student['id'] . '|' . $sem2;
+                        $bm2_bonus = isset($bonusMalusMap[$bmKey2]) && $bonusMalusMap[$bmKey2]['bonus'] !== null ? (float)$bonusMalusMap[$bmKey2]['bonus'] : 0.0;
+                        $bm2_malus = isset($bonusMalusMap[$bmKey2]) && $bonusMalusMap[$bmKey2]['malus'] !== null ? (float)$bonusMalusMap[$bmKey2]['malus'] : 0.0;
+                    }
+
+                    $activeSemestersCount = $sem2 ? 2 : 1;
+                    $netBM = (($bm1_bonus - $bm1_malus) + ($bm2_bonus - $bm2_malus)) / $activeSemestersCount;
+
+                    // Jury points
+                    $isJury1Valide = isset($semestersJuryState[$sem1]) && $semestersJuryState[$sem1] === 1;
+                    $ptsBcc1 = $isJury1Valide ? ($juryPointsMap[$student['id']][$sem1]['bcc'][$bcc['id']] ?? 0.0) : 0.0;
+
+                    $ptsBcc2 = 0.0;
+                    if ($sem2) {
+                        $isJury2Valide = isset($semestersJuryState[$sem2]) && $semestersJuryState[$sem2] === 1;
+                        $ptsBcc2 = $isJury2Valide ? ($juryPointsMap[$student['id']][$sem2]['bcc'][$twinId] ?? 0.0) : 0.0;
+                    }
+                    $netJury = ($ptsBcc1 + $ptsBcc2) / $activeSemestersCount;
+
                     // Active (Adjusted)
                     $totalSum = 0; $totalCoeff = 0; $isDef = false;
                     foreach ($annualUes as $ue) {
@@ -365,8 +396,12 @@ if ($method === 'GET') {
                     }
                     if ($isDef) {
                         $moyAnnuelle = 'DEF';
+                    } elseif ($totalCoeff > 0) {
+                        $rawMoy = $totalSum / $totalCoeff;
+                        $moyAnnuelle = max(0.0, min(20.0, $rawMoy + $netBM + $netJury));
+                        $moyAnnuelle = round($moyAnnuelle, 2);
                     } else {
-                        $moyAnnuelle = ($totalCoeff > 0) ? round($totalSum / $totalCoeff, 2) : null;
+                        $moyAnnuelle = null;
                     }
                     $annualBccs[] = $moyAnnuelle;
                     $student['grades']['bcc_annuel'][$bcc['id']] = $moyAnnuelle;
@@ -385,12 +420,59 @@ if ($method === 'GET') {
                     }
                     if ($isRawDef) {
                         $rawMoyAnnuelle = 'DEF';
+                    } elseif ($totalRawCoeff > 0) {
+                        $rawMoy = $totalRawSum / $totalRawCoeff;
+                        $rawMoyAnnuelle = max(0.0, min(20.0, $rawMoy + $netBM));
+                        $rawMoyAnnuelle = round($rawMoyAnnuelle, 2);
                     } else {
-                        $rawMoyAnnuelle = ($totalRawCoeff > 0) ? round($totalRawSum / $totalRawCoeff, 2) : null;
+                        $rawMoyAnnuelle = null;
                     }
                     $rawAnnualBccs[] = $rawMoyAnnuelle;
                     $student['raw_grades']['bcc_annuel'][$bcc['id']] = $rawMoyAnnuelle;
                     if ($twinId) $student['raw_grades']['bcc_annuel'][$twinId] = $rawMoyAnnuelle;
+                }
+
+                // Overall Year Averages (weighted average of all UEs in the year)
+                $totalYearUeSum = 0; $totalYearUeCoeff = 0; $isYearDef = false;
+                $processedUes = [];
+                foreach ($structure['bcc'] as $bcc) {
+                    foreach ($bcc['ue'] as $ue) {
+                        if (in_array($ue['id'], $processedUes)) continue;
+                        $processedUes[] = $ue['id'];
+                        $ueVal = $student['grades']['ue'][$ue['id']] ?? null;
+                        if ($ueVal === 'DEF') {
+                            $isYearDef = true;
+                        } elseif ($ueVal !== null) {
+                            $totalYearUeSum += ((float)$ueVal * $ue['coeff']);
+                            $totalYearUeCoeff += $ue['coeff'];
+                        }
+                    }
+                }
+                if ($isYearDef) {
+                    $student['grades']['year'] = 'DEF';
+                } else {
+                    $student['grades']['year'] = ($totalYearUeCoeff > 0) ? round($totalYearUeSum / $totalYearUeCoeff, 2) : null;
+                }
+
+                $totalYearRawUeSum = 0; $totalYearRawUeCoeff = 0; $isYearRawDef = false;
+                $processedRawUes = [];
+                foreach ($structure['bcc'] as $bcc) {
+                    foreach ($bcc['ue'] as $ue) {
+                        if (in_array($ue['id'], $processedRawUes)) continue;
+                        $processedRawUes[] = $ue['id'];
+                        $ueRawVal = $student['raw_grades']['ue'][$ue['id']] ?? null;
+                        if ($ueRawVal === 'DEF') {
+                            $isYearRawDef = true;
+                        } elseif ($ueRawVal !== null) {
+                            $totalYearRawUeSum += ((float)$ueRawVal * $ue['coeff']);
+                            $totalYearRawUeCoeff += $ue['coeff'];
+                        }
+                    }
+                }
+                if ($isYearRawDef) {
+                    $student['raw_grades']['year'] = 'DEF';
+                } else {
+                    $student['raw_grades']['year'] = ($totalYearRawUeCoeff > 0) ? round($totalYearRawUeSum / $totalYearRawUeCoeff, 2) : null;
                 }
 
                 $student['validation']['status'] = AcademicLogic::calculateYearValidation($annualBccs, $rules);

@@ -310,7 +310,38 @@ class AcademicLogic {
             if ($isDef) {
                 $moyAnnuelle = 'DEF';
             } elseif ($annualBccCoeff > 0) {
-                $moyAnnuelle = round($annualBccSum / $annualBccCoeff, 2);
+                // Fetch semesters and BM / Jury inputs
+                $sem1 = (int)$bcc['semestre_id'];
+                $sem2 = ($twinId && isset($bccs[$twinId])) ? (int)$bccs[$twinId]['semestre_id'] : null;
+
+                // BM 1
+                $bm1_bonus = $bonusMalusMap[$sem1]['bonus'] ?? 0.0;
+                $bm1_malus = $bonusMalusMap[$sem1]['malus'] ?? 0.0;
+
+                // BM 2
+                $bm2_bonus = 0.0; $bm2_malus = 0.0;
+                if ($sem2 && isset($bonusMalusMap[$sem2])) {
+                    $bm2_bonus = $bonusMalusMap[$sem2]['bonus'] ?? 0.0;
+                    $bm2_malus = $bonusMalusMap[$sem2]['malus'] ?? 0.0;
+                }
+
+                $activeSemestersCount = $sem2 ? 2 : 1;
+                $netBM = (($bm1_bonus - $bm1_malus) + ($bm2_bonus - $bm2_malus)) / $activeSemestersCount;
+
+                // Jury points
+                $isJury1Valide = isset($semestersJuryState[$sem1]) && $semestersJuryState[$sem1] === 1;
+                $ptsBcc1 = $isJury1Valide ? ($juryPointsMap[$sem1]['bcc'][$bccId] ?? 0.0) : 0.0;
+
+                $ptsBcc2 = 0.0;
+                if ($sem2) {
+                    $isJury2Valide = isset($semestersJuryState[$sem2]) && $semestersJuryState[$sem2] === 1;
+                    $ptsBcc2 = $isJury2Valide ? ($juryPointsMap[$sem2]['bcc'][$twinId] ?? 0.0) : 0.0;
+                }
+                $netJury = ($ptsBcc1 + $ptsBcc2) / $activeSemestersCount;
+
+                $rawMoy = $annualBccSum / $annualBccCoeff;
+                $moyAnnuelle = max(0.0, min(20.0, $rawMoy + $netBM + $netJury));
+                $moyAnnuelle = round($moyAnnuelle, 2);
             } else {
                 $moyAnnuelle = null;
             }

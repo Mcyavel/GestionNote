@@ -73,15 +73,8 @@ const GradeLedger: React.FC = () => {
     const bccGroups = getAnnualGroups();
 
     const calculateStudentAnnualAverage = (student: any) => {
-        if (!ledgerData) return null;
-        const averages = bccGroups.map(group => student.grades.bcc_annuel[group.b1.id]);
-        if (averages.some(avg => avg === 'DEF')) return 'DEF';
-        
-        const validScores = averages.filter(avg => avg !== null && avg !== undefined && !isNaN(Number(avg))).map(avg => Number(avg));
-        if (validScores.length === 0) return null;
-        
-        const sum = validScores.reduce((a, b) => a + b, 0);
-        return Number((sum / validScores.length).toFixed(2));
+        if (!student || student.grades?.year === undefined) return null;
+        return student.grades.year;
     };
 
     const computeStats = (grades: number[]) => {
